@@ -21,11 +21,10 @@ export interface InstallmentPlan {
 
 /** Default tenor/fee table. The API's `/plans` endpoint may override this. */
 export const DEFAULT_TENORS: TenorOption[] = [
-  { months: 3, feeRate: 0 },
-  { months: 6, feeRate: 0.03 },
-  { months: 12, feeRate: 0.06 },
-  { months: 24, feeRate: 0.11 },
-  { months: 36, feeRate: 0.16 },
+  { months: 1, feeRate: 0 },
+  { months: 2, feeRate: 0 },
+  { months: 4, feeRate: 0.03 },
+  { months: 6, feeRate: 0.05 },
 ];
 
 export function calculatePlans(

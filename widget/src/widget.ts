@@ -1,6 +1,6 @@
 import { calculatePlans, InstallmentPlan } from "./calculator";
 
-type Screen = "amount" | "tenor";
+type Screen = "amount" | "budget";
 
 /**
  * <blnk-installment-widget
@@ -11,11 +11,15 @@ type Screen = "amount" | "tenor";
  *   data-max-amount="15000">
  * </blnk-installment-widget>
  *
- * Two steps happen inline, on the merchant's own page: pick an amount, pick
- * a plan. The eligibility decision itself does not — it hands off to a
- * hosted page on the same origin as the API (a "different page", the same
- * redirect pattern real BNPL providers use for the underwriting step),
- * instead of resolving inline with no visible handoff.
+ * Two questions, both on the merchant's own page: how much do you want, and
+ * how much can you pay a month. From those two numbers the widget suggests
+ * one plan — the shortest of {1, 2, 4, 6} months whose payment still fits
+ * what was said — rather than asking the shopper to read and compare a
+ * table of options themselves.
+ *
+ * The eligibility decision itself is not answered inline — it hands off to
+ * a hosted page on the same origin as the API (a "different page", the same
+ * redirect pattern real BNPL providers use for the underwriting step).
  *
  * Shadow DOM keeps the widget's styles from leaking into (or being clobbered
  * by) the host page — the whole point of an embed that has to survive
@@ -28,7 +32,7 @@ export class BlnkInstallmentWidget extends HTMLElement {
   private minAmount = 500;
   private maxAmount = 15000;
   private plans: InstallmentPlan[] = [];
-  private selectedMonths: number | null = null;
+  private budget = 0;
 
   constructor() {
     super();
@@ -58,11 +62,24 @@ export class BlnkInstallmentWidget extends HTMLElement {
     return this.getAttribute("data-merchant-id") ?? "";
   }
 
+  /** Recomputes the {1,2,4,6}-month plans for the current amount and resets
+   *  the monthly-budget slider to a sensible midpoint of the new range. */
   private recalculatePlans() {
-    this.plans = calculatePlans(this.amount);
-    if (this.selectedMonths && !this.plans.some((p) => p.months === this.selectedMonths)) {
-      this.selectedMonths = null;
-    }
+    this.plans = calculatePlans(this.amount); // ascending months → descending monthly payment
+    const mid = this.plans[Math.floor(this.plans.length / 2)];
+    this.budget = mid.monthlyPayment;
+  }
+
+  private get budgetBounds(): { min: number; max: number } {
+    const payments = this.plans.map((p) => p.monthlyPayment);
+    return { min: Math.min(...payments), max: Math.max(...payments) };
+  }
+
+  /** The shortest plan whose payment still fits what was said, or the
+   *  cheapest-per-month plan if nothing fits within budget. */
+  private suggestedPlan(budget: number): InstallmentPlan {
+    const affordable = this.plans.filter((p) => p.monthlyPayment <= budget + 0.01);
+    return affordable[0] ?? this.plans[this.plans.length - 1];
   }
 
   // ---------------------------------------------------------------- render
@@ -75,11 +92,11 @@ export class BlnkInstallmentWidget extends HTMLElement {
           <span class="blnk-logo">${ICONS.spark}blnk</span>
           <div class="blnk-steps" role="tablist" aria-label="Progress">
             <span class="dot ${this.screen === "amount" ? "active" : "done"}"></span>
-            <span class="dot ${this.screen === "tenor" ? "active" : ""}"></span>
+            <span class="dot ${this.screen === "budget" ? "active" : ""}"></span>
           </div>
         </header>
         <div class="blnk-body">
-          ${this.screen === "amount" ? this.renderAmountScreen() : this.renderTenorScreen()}
+          ${this.screen === "amount" ? this.renderAmountScreen() : this.renderBudgetScreen()}
         </div>
       </div>
     `;
@@ -92,8 +109,8 @@ export class BlnkInstallmentWidget extends HTMLElement {
 
     return `
       <div class="chip-icon">${ICONS.wallet}</div>
-      <h2 class="blnk-title">How much do you need?</h2>
-      <p class="blnk-subtitle">Pick an amount — you'll choose a plan next.</p>
+      <h2 class="blnk-title">How much do you want?</h2>
+      <p class="blnk-subtitle">You'll tell us what you can pay monthly next.</p>
 
       <div class="amount-display">${money(this.amount)}</div>
 
@@ -124,27 +141,46 @@ export class BlnkInstallmentWidget extends HTMLElement {
     `;
   }
 
-  private renderTenorScreen(): string {
+  private renderBudgetScreen(): string {
+    const { min, max } = this.budgetBounds;
+    const pct = ((this.budget - min) / (max - min || 1)) * 100;
+    const suggestion = this.suggestedPlan(this.budget);
+
     return `
       <button type="button" class="back">← ${money(this.amount)}</button>
-      <h2 class="blnk-title">Choose your plan</h2>
-      <p class="blnk-subtitle">Split ${money(this.amount)} into monthly payments.</p>
+      <div class="chip-icon">${ICONS.calendarBig}</div>
+      <h2 class="blnk-title">How much can you pay monthly?</h2>
+      <p class="blnk-subtitle">We'll match you to a plan that fits.</p>
 
-      <div class="tenors">
-        ${this.plans
-          .map((p) => {
-            const selected = p.months === this.selectedMonths;
-            return `
-            <button type="button" class="tenor ${selected ? "selected" : ""}" data-months="${p.months}">
-              <span class="months">${ICONS.calendar}${p.months} months</span>
-              <span class="monthly">${money(p.monthlyPayment)}<small>/mo</small></span>
-              <span class="total ${p.feeAmount === 0 ? "no-fee" : ""}">${p.feeAmount === 0 ? `${ICONS.tag}No fees` : `${money(p.totalCost)} total`}</span>
-            </button>`;
-          })
-          .join("")}
+      <div class="amount-display">${money(this.budget)}<small>/mo</small></div>
+
+      <input
+        class="amount-slider"
+        type="range"
+        min="${Math.floor(min)}"
+        max="${Math.ceil(max)}"
+        step="1"
+        value="${this.budget}"
+        style="--fill:${pct}%"
+        aria-label="Monthly budget"
+      />
+      <div class="amount-range">
+        <span>${money(min)}/mo</span>
+        <span>${money(max)}/mo</span>
       </div>
 
-      <button type="button" class="cta" ${this.selectedMonths ? "" : "disabled"}>Check eligibility</button>
+      <div class="suggestion">
+        <div class="suggestion-label">Suggested plan</div>
+        <div class="suggestion-row">
+          <span class="suggestion-months">${ICONS.calendar}${suggestion.months} ${suggestion.months === 1 ? "month" : "months"}</span>
+          <span class="suggestion-monthly">${money(suggestion.monthlyPayment)}<small>/mo</small></span>
+        </div>
+        <div class="suggestion-total ${suggestion.feeAmount === 0 ? "no-fee" : ""}">
+          ${suggestion.feeAmount === 0 ? `${ICONS.tag}No fees` : `${money(suggestion.totalCost)} total`}
+        </div>
+      </div>
+
+      <button type="button" class="cta">Check eligibility</button>
     `;
   }
 
@@ -183,19 +219,31 @@ export class BlnkInstallmentWidget extends HTMLElement {
 
       root.querySelector<HTMLButtonElement>(".cta")?.addEventListener("click", () => {
         this.recalculatePlans();
-        this.screen = "tenor";
+        this.screen = "budget";
         this.render();
       });
     } else {
-      root.querySelectorAll<HTMLButtonElement>(".tenor").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          this.selectedMonths = Number(btn.dataset.months);
-          root.querySelectorAll<HTMLButtonElement>(".tenor").forEach((b) => {
-            b.classList.toggle("selected", Number(b.dataset.months) === this.selectedMonths);
-          });
-          const cta = root.querySelector<HTMLButtonElement>(".cta")!;
-          cta.removeAttribute("disabled");
-        });
+      const slider = root.querySelector<HTMLInputElement>(".amount-slider")!;
+      const display = root.querySelector<HTMLDivElement>(".amount-display")!;
+      const suggestionBox = root.querySelector<HTMLDivElement>(".suggestion")!;
+      const { min, max } = this.budgetBounds;
+
+      slider.addEventListener("input", () => {
+        this.budget = Number(slider.value);
+        display.innerHTML = `${money(this.budget)}<small>/mo</small>`;
+        slider.style.setProperty("--fill", `${((this.budget - min) / (max - min || 1)) * 100}%`);
+
+        const suggestion = this.suggestedPlan(this.budget);
+        suggestionBox.innerHTML = `
+          <div class="suggestion-label">Suggested plan</div>
+          <div class="suggestion-row">
+            <span class="suggestion-months">${ICONS.calendar}${suggestion.months} ${suggestion.months === 1 ? "month" : "months"}</span>
+            <span class="suggestion-monthly">${money(suggestion.monthlyPayment)}<small>/mo</small></span>
+          </div>
+          <div class="suggestion-total ${suggestion.feeAmount === 0 ? "no-fee" : ""}">
+            ${suggestion.feeAmount === 0 ? `${ICONS.tag}No fees` : `${money(suggestion.totalCost)} total`}
+          </div>
+        `;
       });
 
       root.querySelector<HTMLButtonElement>(".cta")?.addEventListener("click", () => this.goToDecision());
@@ -205,15 +253,15 @@ export class BlnkInstallmentWidget extends HTMLElement {
   /**
    * Hands off to the hosted decision page instead of resolving inline.
    * Mirrors how real BNPL checkouts work: the merchant's page collects the
-   * amount and plan, then the provider's own page (same origin as its API,
-   * not the merchant's) makes the call and shows the result.
+   * amount and suggested plan, then the provider's own page (same origin as
+   * its API, not the merchant's) makes the call and shows the result.
    */
   private goToDecision() {
-    if (!this.selectedMonths) return;
+    const suggestion = this.suggestedPlan(this.budget);
     const params = new URLSearchParams({
       merchantId: this.merchantId,
       amount: String(this.amount),
-      months: String(this.selectedMonths),
+      months: String(suggestion.months),
     });
     window.location.href = `${this.apiBase}/apply/?${params.toString()}`;
   }
@@ -240,6 +288,7 @@ const ICONS = {
   spark: `<svg class="ic-spark" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M11 1.5L4.5 11h4L7.5 18.5 16 8h-4l1-6.5z" fill="#f37b70"/></svg>`,
   wallet: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3" stroke="#242366" stroke-width="1.6"/><path d="M3 9.5h18" stroke="#242366" stroke-width="1.6"/><circle cx="16.5" cy="14" r="1.4" fill="#f37b70"/></svg>`,
   calendar: `<svg class="ic-inline" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.5v3M13 2.5v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+  calendarBig: `<svg width="24" height="24" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2" stroke="#242366" stroke-width="1.5"/><path d="M3 8h14" stroke="#242366" stroke-width="1.5"/><path d="M7 2.5v3M13 2.5v3" stroke="#242366" stroke-width="1.5" stroke-linecap="round"/><circle cx="7.5" cy="12" r="1.1" fill="#f37b70"/></svg>`,
   tag: `<svg class="ic-inline" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10.5 2.5H16a1.5 1.5 0 011.5 1.5v5.5a1.5 1.5 0 01-.44 1.06l-7 7a1.5 1.5 0 01-2.12 0l-5.5-5.5a1.5 1.5 0 010-2.12l7-7a1.5 1.5 0 011.06-.44z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="13" cy="7" r="1.3" fill="currentColor"/></svg>`,
 };
 
@@ -314,6 +363,7 @@ const STYLES = `
     padding: 10px 0 18px;
     color: var(--navy);
   }
+  .amount-display small { font-size: 14px; font-weight: 600; color: var(--muted); margin-left: 2px; }
 
   .amount-slider {
     -webkit-appearance: none;
@@ -381,54 +431,50 @@ const STYLES = `
   .preset:hover { border-color: var(--blue); }
   .preset.selected { border-color: var(--navy); background: var(--navy); color: #fff; }
 
-  .tenors {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+  .ic-inline { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .suggestion {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
     margin-bottom: 20px;
   }
-  .tenor {
+  .suggestion-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .suggestion-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 8px;
-    width: 100%;
-    text-align: left;
-    padding: 14px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 14px;
-    background: var(--bg);
-    font-family: inherit;
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
   }
-  .tenor:hover { border-color: var(--blue); }
-  .tenor.selected { border-color: var(--navy); background: #fff; box-shadow: 0 0 0 1.5px var(--navy) inset; }
-  .tenor .months {
+  .suggestion-months {
     display: flex;
     align-items: center;
     gap: 6px;
     font-weight: 700;
-    font-size: 14px;
+    font-size: 15px;
     color: var(--navy);
-    flex: 1;
   }
-  .ic-inline { width: 14px; height: 14px; flex-shrink: 0; color: var(--muted); }
-  .tenor.selected .ic-inline { color: var(--navy); }
-  .tenor .monthly { font-weight: 800; font-size: 15px; color: var(--navy); }
-  .tenor .monthly small { font-weight: 600; font-size: 11px; color: var(--muted); }
-  .tenor .total {
+  .suggestion-months .ic-inline { color: var(--navy); }
+  .suggestion-monthly { font-weight: 800; font-size: 18px; color: var(--navy); }
+  .suggestion-monthly small { font-weight: 600; font-size: 11px; color: var(--muted); }
+  .suggestion-total {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
     gap: 4px;
     font-size: 11px;
     color: var(--muted);
     font-weight: 700;
-    min-width: 78px;
+    margin-top: 8px;
   }
-  .tenor .total.no-fee { color: var(--coral-dark); }
-  .tenor .total .ic-inline { color: var(--coral-dark); }
+  .suggestion-total.no-fee { color: var(--coral-dark); }
+  .suggestion-total .ic-inline { color: var(--coral-dark); }
 
   .back {
     background: none;
