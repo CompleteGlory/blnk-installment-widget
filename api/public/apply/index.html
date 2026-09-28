@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>blnk — Your decision</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dosis:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --navy: #242366;
+        --blue: #6aabdd;
+        --coral: #f37b70;
+        --coral-dark: #e8604f;
+        --muted: #6f6fa0;
+        --border: #e5e5f2;
+        --bg: #f5f5f5;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--bg);
+        font-family: "Dosis", system-ui, sans-serif;
+        color: var(--navy);
+        padding: 24px 16px;
+      }
+      .card {
+        width: 100%;
+        max-width: 400px;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 32px 28px;
+        box-shadow: 0 12px 32px rgba(36, 35, 102, 0.1);
+        text-align: center;
+      }
+      .logo {
+        font-weight: 800;
+        font-size: 20px;
+        margin-bottom: 28px;
+        color: var(--navy);
+      }
+      .badge {
+        display: inline-block;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--muted);
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 3px 10px;
+        margin-bottom: 18px;
+      }
+
+      /* Pending */
+      .spinner {
+        width: 52px;
+        height: 52px;
+        margin: 8px auto 22px;
+        border-radius: 50%;
+        background: conic-gradient(var(--coral) 0deg, var(--blue) 260deg, var(--border) 260deg);
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 7px), #000 calc(100% - 6px));
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* Result icon */
+      .icon {
+        width: 64px;
+        height: 64px;
+        margin: 4px auto 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .icon.approved { background: var(--coral); }
+      .icon.declined { background: var(--bg); border: 2px solid var(--border); }
+      .icon svg { width: 30px; height: 30px; }
+
+      h1 { font-size: 21px; font-weight: 800; margin: 0 0 6px; }
+      p.sub { font-size: 14px; color: var(--muted); font-weight: 500; margin: 0 0 24px; }
+
+      .plan {
+        background: var(--bg);
+        border-radius: 16px;
+        padding: 18px;
+        margin-bottom: 24px;
+        text-align: left;
+      }
+      .plan-row { display: flex; justify-content: space-between; align-items: baseline; padding: 4px 0; }
+      .plan-row .label { font-size: 12px; color: var(--muted); font-weight: 600; }
+      .plan-row .value { font-size: 14px; font-weight: 700; color: var(--navy); }
+      .plan-row.headline .value { font-size: 22px; color: var(--coral-dark); }
+
+      .cta {
+        display: block;
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 999px;
+        background: var(--navy);
+        color: #fff;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 15px;
+        text-decoration: none;
+        cursor: pointer;
+      }
+      .cta:hover { opacity: 0.92; }
+      .cta.secondary {
+        background: none;
+        color: var(--muted);
+        font-size: 13px;
+        margin-top: 12px;
+        font-weight: 600;
+      }
+      .cta.secondary:hover { color: var(--navy); }
+
+      .error { color: var(--coral-dark); font-size: 13px; font-weight: 600; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="logo">blnk</div>
+      <div id="content">
+        <span class="badge">Self-hosted demo</span>
+        <div class="spinner"></div>
+        <h1>Reviewing your application…</h1>
+        <p class="sub">This only takes a moment.</p>
+      </div>
+    </div>
+
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const merchantId = params.get("merchantId") || "demo-merchant";
+      const amount = Number(params.get("amount"));
+      const months = Number(params.get("months"));
+      const content = document.getElementById("content");
+
+      function money(n) {
+        return Number(n).toLocaleString(undefined, {
+          style: "currency",
+          currency: "EGP",
+          maximumFractionDigits: 0,
+        });
+      }
+
+      function renderApproved(plan) {
+        content.innerHTML = `
+          <div class="icon approved">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h1>You're approved!</h1>
+          <p class="sub">Here's your plan for ${money(amount)}.</p>
+          <div class="plan">
+            <div class="plan-row headline">
+              <span class="label">Monthly payment</span>
+              <span class="value">${money(plan.monthlyPayment)}</span>
+            </div>
+            <div class="plan-row">
+              <span class="label">Term</span>
+              <span class="value">${plan.months} months</span>
+            </div>
+            <div class="plan-row">
+              <span class="label">Total cost</span>
+              <span class="value">${money(plan.totalCost)}</span>
+            </div>
+          </div>
+          <a class="cta" href="/">Back to store</a>
+        `;
+      }
+
+      function renderDeclined() {
+        content.innerHTML = `
+          <div class="icon declined">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#242366" stroke-width="3" stroke-linecap="round"/></svg>
+          </div>
+          <h1>Not approved this time</h1>
+          <p class="sub">Try a different amount or a shorter plan.</p>
+          <a class="cta" href="/">Choose a different plan</a>
+        `;
+      }
+
+      function renderError(message) {
+        content.innerHTML = `
+          <h1>Something went wrong</h1>
+          <p class="error">${message}</p>
+          <a class="cta secondary" href="/">Back to store</a>
+        `;
+      }
+
+      async function pollUntilResolved(applicationId) {
+        for (let attempt = 0; attempt < 10; attempt++) {
+          await new Promise((r) => setTimeout(r, 1200));
+          const res = await fetch(`/applications/${applicationId}`);
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (data.status === "approved") return renderApproved(data.plan);
+          if (data.status === "declined") return renderDeclined();
+        }
+        renderError("This is taking longer than expected — please try again.");
+      }
+
+      async function start() {
+        if (!amount || !months) {
+          return renderError("Missing amount or plan — go back and try again.");
+        }
+        try {
+          const res = await fetch("/eligibility", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ merchantId, amount, months }),
+          });
+          if (!res.ok) throw new Error(`eligibility check failed: ${res.status}`);
+          const data = await res.json();
+          await pollUntilResolved(data.applicationId);
+        } catch (err) {
+          renderError("Couldn't reach the eligibility service — please try again.");
+        }
+      }
+
+      start();
+    </script>
+  </body>
+</html>

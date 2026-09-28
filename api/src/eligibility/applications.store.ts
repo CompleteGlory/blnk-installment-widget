@@ -5,7 +5,6 @@ export type ApplicationStatus = "approved" | "declined" | "pending";
 export interface ApplicationRecord {
   id: string;
   merchantId: string;
-  nationalId: string;
   months: number;
   amount: number;
   finalStatus: Exclude<ApplicationStatus, "pending">;

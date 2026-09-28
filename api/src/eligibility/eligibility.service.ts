@@ -18,18 +18,21 @@ export class EligibilityService {
     private readonly plans: PlansService
   ) {}
 
-  check(merchantId: string, nationalId: string, months: number, amount: number): EligibilityResult {
-    if (!isValidNationalId(nationalId)) {
-      throw new BadRequestException("nationalId must be 14 digits");
+  check(merchantId: string, months: number, amount: number): EligibilityResult {
+    if (!merchantId) throw new BadRequestException("merchantId is required");
+    if (!Number.isFinite(amount) || amount <= 0) {
+      throw new BadRequestException("amount must be a positive number");
+    }
+    if (!Number.isFinite(months) || months <= 0) {
+      throw new BadRequestException("months must be a positive number");
     }
 
     const id = randomUUID();
-    const finalStatus = decide(nationalId);
+    const finalStatus = decide(merchantId, amount, months);
 
     this.applications.save({
       id,
       merchantId,
-      nationalId,
       months,
       amount,
       finalStatus,
@@ -38,7 +41,7 @@ export class EligibilityService {
     });
 
     // Every application starts pending, same as a real underwriting call —
-    // the widget polls /applications/:id until this resolves.
+    // the hosted decision page polls /applications/:id until this resolves.
     return { applicationId: id, status: "pending" };
   }
 
@@ -62,19 +65,16 @@ export class EligibilityService {
   }
 }
 
-/** 14-digit Egyptian National ID format check (structure only, not a real registry lookup). */
-function isValidNationalId(nationalId: string): boolean {
-  return /^\d{14}$/.test(nationalId);
-}
-
 /**
- * Deterministic mock decision so the same National ID gets the same answer
- * on repeat lookups, instead of a coin flip each time. Not a real credit
- * decision — a checksum standing in for one.
+ * Deterministic mock decision so the same request gets the same answer on
+ * repeat lookups, instead of a coin flip each time. Not a real credit
+ * decision — a checksum standing in for one, keyed on merchant + amount +
+ * tenor now that there's no National ID in the flow.
  */
-function decide(nationalId: string): "approved" | "declined" {
-  const digitSum = nationalId
+function decide(merchantId: string, amount: number, months: number): "approved" | "declined" {
+  const key = `${merchantId}:${amount}:${months}`;
+  const digitSum = key
     .split("")
-    .reduce((sum, digit) => sum + Number(digit), 0);
+    .reduce((sum, ch) => sum + ch.charCodeAt(0), 0);
   return digitSum % 10 < 8 ? "approved" : "declined";
 }

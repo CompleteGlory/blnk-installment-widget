@@ -3,7 +3,6 @@ import { EligibilityService } from "./eligibility.service";
 
 interface CheckEligibilityDto {
   merchantId: string;
-  nationalId: string;
   months: number;
   amount: number;
 }
@@ -14,7 +13,7 @@ export class EligibilityController {
 
   @Post("eligibility")
   check(@Body() body: CheckEligibilityDto) {
-    return this.eligibility.check(body.merchantId, body.nationalId, body.months, body.amount);
+    return this.eligibility.check(body.merchantId, body.months, body.amount);
   }
 
   @Get("applications/:id")
