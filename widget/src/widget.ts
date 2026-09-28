@@ -72,7 +72,7 @@ export class BlnkInstallmentWidget extends HTMLElement {
       <style>${STYLES}</style>
       <div class="blnk">
         <header class="blnk-header">
-          <span class="blnk-logo">blnk</span>
+          <span class="blnk-logo">${ICONS.spark}blnk</span>
           <div class="blnk-steps" role="tablist" aria-label="Progress">
             <span class="dot ${this.screen === "amount" ? "active" : "done"}"></span>
             <span class="dot ${this.screen === "tenor" ? "active" : ""}"></span>
@@ -91,6 +91,7 @@ export class BlnkInstallmentWidget extends HTMLElement {
     const presets = presetAmounts(this.minAmount, this.maxAmount);
 
     return `
+      <div class="chip-icon">${ICONS.wallet}</div>
       <h2 class="blnk-title">How much do you need?</h2>
       <p class="blnk-subtitle">Pick an amount — you'll choose a plan next.</p>
 
@@ -135,9 +136,9 @@ export class BlnkInstallmentWidget extends HTMLElement {
             const selected = p.months === this.selectedMonths;
             return `
             <button type="button" class="tenor ${selected ? "selected" : ""}" data-months="${p.months}">
-              <span class="months">${p.months} months</span>
+              <span class="months">${ICONS.calendar}${p.months} months</span>
               <span class="monthly">${money(p.monthlyPayment)}<small>/mo</small></span>
-              <span class="total">${p.feeAmount === 0 ? "No fees" : `${money(p.totalCost)} total`}</span>
+              <span class="total ${p.feeAmount === 0 ? "no-fee" : ""}">${p.feeAmount === 0 ? `${ICONS.tag}No fees` : `${money(p.totalCost)} total`}</span>
             </button>`;
           })
           .join("")}
@@ -234,6 +235,14 @@ function money(n: number): string {
   return n.toLocaleString(undefined, { style: "currency", currency: "EGP", maximumFractionDigits: 0 });
 }
 
+/** Small inline icon set — no external asset requests, so the widget stays a self-contained embed. */
+const ICONS = {
+  spark: `<svg class="ic-spark" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M11 1.5L4.5 11h4L7.5 18.5 16 8h-4l1-6.5z" fill="#f37b70"/></svg>`,
+  wallet: `<svg width="26" height="26" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="3" stroke="#242366" stroke-width="1.6"/><path d="M3 9.5h18" stroke="#242366" stroke-width="1.6"/><circle cx="16.5" cy="14" r="1.4" fill="#f37b70"/></svg>`,
+  calendar: `<svg class="ic-inline" viewBox="0 0 20 20" fill="none" aria-hidden="true"><rect x="3" y="4.5" width="14" height="12.5" rx="2" stroke="currentColor" stroke-width="1.4"/><path d="M3 8h14" stroke="currentColor" stroke-width="1.4"/><path d="M7 2.5v3M13 2.5v3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>`,
+  tag: `<svg class="ic-inline" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10.5 2.5H16a1.5 1.5 0 011.5 1.5v5.5a1.5 1.5 0 01-.44 1.06l-7 7a1.5 1.5 0 01-2.12 0l-5.5-5.5a1.5 1.5 0 010-2.12l7-7a1.5 1.5 0 011.06-.44z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="13" cy="7" r="1.3" fill="currentColor"/></svg>`,
+};
+
 const STYLES = `
   @import url('https://fonts.googleapis.com/css2?family=Dosis:wght@400;500;600;700;800&display=swap');
 
@@ -270,11 +279,15 @@ const STYLES = `
     margin-bottom: 18px;
   }
   .blnk-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     font-weight: 800;
     font-size: 20px;
     color: var(--navy);
     letter-spacing: -0.02em;
   }
+  .ic-spark { width: 15px; height: 15px; }
   .blnk-steps { display: flex; gap: 6px; }
   .dot { width: 18px; height: 6px; border-radius: 999px; background: var(--border); transition: background .2s; }
   .dot.active { background: var(--coral); }
@@ -282,6 +295,17 @@ const STYLES = `
 
   .blnk-title { font-size: 19px; font-weight: 700; margin: 0 0 4px; }
   .blnk-subtitle { font-size: 13px; color: var(--muted); margin: 0 0 18px; font-weight: 500; }
+
+  .chip-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+  }
 
   .amount-display {
     font-size: 34px;
@@ -380,10 +404,31 @@ const STYLES = `
   }
   .tenor:hover { border-color: var(--blue); }
   .tenor.selected { border-color: var(--navy); background: #fff; box-shadow: 0 0 0 1.5px var(--navy) inset; }
-  .tenor .months { font-weight: 700; font-size: 14px; color: var(--navy); flex: 1; }
+  .tenor .months {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--navy);
+    flex: 1;
+  }
+  .ic-inline { width: 14px; height: 14px; flex-shrink: 0; color: var(--muted); }
+  .tenor.selected .ic-inline { color: var(--navy); }
   .tenor .monthly { font-weight: 800; font-size: 15px; color: var(--navy); }
   .tenor .monthly small { font-weight: 600; font-size: 11px; color: var(--muted); }
-  .tenor .total { font-size: 11px; color: var(--coral-dark); font-weight: 700; min-width: 78px; text-align: right; }
+  .tenor .total {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    font-weight: 700;
+    min-width: 78px;
+  }
+  .tenor .total.no-fee { color: var(--coral-dark); }
+  .tenor .total .ic-inline { color: var(--coral-dark); }
 
   .back {
     background: none;

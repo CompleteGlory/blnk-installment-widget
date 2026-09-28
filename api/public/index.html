@@ -13,14 +13,18 @@
     <style>
       body {
         font-family: "Dosis", system-ui, sans-serif;
-        max-width: 460px;
-        margin: 48px auto;
-        padding: 0 16px;
+        margin: 0;
         color: #242366;
         background: #f5f5f5;
       }
+      .page {
+        max-width: 480px;
+        margin: 0 auto;
+        padding: 40px 16px 64px;
+      }
       .badge {
-        display: inline-block;
+        display: block;
+        width: fit-content;
         font-size: 11px;
         font-weight: 700;
         letter-spacing: 0.03em;
@@ -29,48 +33,56 @@
         border: 1px solid #e5e5f2;
         border-radius: 999px;
         padding: 3px 10px;
-        margin-bottom: 18px;
+        margin: 0 auto 28px;
         background: #fff;
       }
-      .product {
-        background: #fff;
-        border: 1px solid #e5e5f2;
-        border-radius: 16px;
-        padding: 16px;
-        margin-bottom: 24px;
+      .hero {
+        text-align: center;
+        margin-bottom: 28px;
+      }
+      .hero img {
+        width: 190px;
+        height: 190px;
+        margin-bottom: 8px;
+      }
+      .hero h1 {
+        font-size: 24px;
+        font-weight: 800;
+        margin: 0 0 6px;
+        letter-spacing: -0.01em;
+      }
+      .hero p {
+        font-size: 14px;
+        font-weight: 500;
+        color: #6f6fa0;
+        margin: 0;
+      }
+      .widget-wrap {
         display: flex;
-        gap: 14px;
-        align-items: center;
+        justify-content: center;
       }
-      .product .swatch {
-        width: 56px;
-        height: 56px;
-        border-radius: 12px;
-        background: linear-gradient(135deg, #6aabdd, #242366);
-        flex-shrink: 0;
-      }
-      .product h1 { font-size: 16px; margin: 0 0 4px; font-weight: 700; }
-      .product p { font-size: 13px; margin: 0; color: #6f6fa0; font-weight: 500; }
     </style>
   </head>
   <body>
-    <span class="badge">Merchant page (self-hosted demo, not a live Blnk integration)</span>
+    <div class="page">
+      <span class="badge">Merchant page (self-hosted demo, not a live Blnk integration)</span>
 
-    <div class="product">
-      <div class="swatch"></div>
-      <div>
-        <h1>Wireless Earbuds</h1>
-        <p>Pay in installments at checkout</p>
+      <div class="hero">
+        <img src="/assets/hero.svg" alt="" />
+        <h1>Split it, blnk it.</h1>
+        <p>Pick an amount, pick a plan, get an answer in minutes.</p>
+      </div>
+
+      <div class="widget-wrap">
+        <blnk-installment-widget
+          data-api-base=""
+          data-merchant-id="demo-merchant"
+          data-amount="4500"
+          data-min-amount="500"
+          data-max-amount="15000"
+        ></blnk-installment-widget>
       </div>
     </div>
-
-    <blnk-installment-widget
-      data-api-base=""
-      data-merchant-id="demo-merchant"
-      data-amount="4500"
-      data-min-amount="500"
-      data-max-amount="15000"
-    ></blnk-installment-widget>
 
     <script src="/widget.js"></script>
   </body>

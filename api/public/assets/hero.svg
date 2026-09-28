@@ -1,0 +1,51 @@
+<svg width="480" height="480" viewBox="0 0 480 480" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="">
+  <defs>
+    <radialGradient id="softGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#6aabdd" stop-opacity="0.35" />
+      <stop offset="100%" stop-color="#6aabdd" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="diamondStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#242366" />
+      <stop offset="100%" stop-color="#6aabdd" />
+    </linearGradient>
+    <linearGradient id="coinFace" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f89b8f" />
+      <stop offset="100%" stop-color="#f37b70" />
+    </linearGradient>
+  </defs>
+
+  <circle cx="240" cy="240" r="200" fill="url(#softGlow)" />
+
+  <!-- rounded diamond outline, echoes the brand's rotated-square motif -->
+  <rect
+    x="90" y="90" width="300" height="300" rx="48"
+    transform="rotate(45 240 240)"
+    stroke="url(#diamondStroke)" stroke-width="3" stroke-dasharray="2 14" stroke-linecap="round"
+    fill="none" opacity="0.55"
+  />
+  <rect
+    x="130" y="130" width="220" height="220" rx="36"
+    transform="rotate(45 240 240)"
+    stroke="#6aabdd" stroke-width="2" stroke-dasharray="1 10" stroke-linecap="round"
+    fill="none" opacity="0.35"
+  />
+
+  <!-- floating "coins" -->
+  <circle cx="150" cy="150" r="34" fill="url(#coinFace)" />
+  <circle cx="150" cy="150" r="34" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.5" />
+  <text x="150" y="158" font-family="Dosis, sans-serif" font-weight="800" font-size="26" fill="#ffffff" text-anchor="middle">£</text>
+
+  <circle cx="345" cy="340" r="46" fill="#242366" />
+  <text x="345" y="349" font-family="Dosis, sans-serif" font-weight="800" font-size="32" fill="#ffffff" text-anchor="middle">£</text>
+
+  <circle cx="352" cy="140" r="16" fill="#6aabdd" />
+  <circle cx="120" cy="330" r="11" fill="#f37b70" />
+  <circle cx="240" cy="60" r="7" fill="#242366" opacity="0.4" />
+
+  <!-- instant-approval flash -->
+  <path
+    d="M256 190 L216 258 L242 258 L228 306 L280 232 L252 232 Z"
+    fill="#f37b70"
+    opacity="0.9"
+  />
+</svg>
