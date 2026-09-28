@@ -1,0 +1,13 @@
+{
+  "name": "blnk-installment-widget",
+  "private": true,
+  "workspaces": [
+    "widget",
+    "api"
+  ],
+  "scripts": {
+    "dev:api": "npm run start:dev --workspace=api",
+    "build:widget": "npm run build --workspace=widget",
+    "build:api": "npm run build --workspace=api"
+  }
+}

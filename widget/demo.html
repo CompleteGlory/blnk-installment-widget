@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Merchant checkout — installment widget demo</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+  </head>
+  <body style="font-family: system-ui, sans-serif; max-width: 480px; margin: 40px auto;">
+    <h1 style="font-size: 18px;">Wireless Earbuds — EGP 4,500</h1>
+    <p style="color: #667085; font-size: 14px;">Pay in installments with Blnk</p>
+
+    <blnk-installment-widget
+      data-api-base="http://localhost:3000"
+      data-merchant-id="demo-merchant"
+      data-amount="4500"
+    ></blnk-installment-widget>
+
+    <script src="dist/widget.js"></script>
+  </body>
+</html>
