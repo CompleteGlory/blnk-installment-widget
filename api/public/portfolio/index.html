@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Magd Kamal — Mobile &amp; Backend Engineer</title>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="Magd Kamal — Flutter and backend engineer. Shipped Riff, Madar, Fixr, Olofoofo and more." />
+<link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
+<link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png" />
+<link rel="apple-touch-icon" href="../assets/apple-touch-icon.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --orange: #ef9b4e;
+    --orange-dark: #e2802a;
+    --navy: #1f2333;
+    --navy-soft: #4a4f63;
+    --muted: #767b8d;
+    --border: #eae7e1;
+    --bg: #fdfbf8;
+    --bg-soft: #f6f3ee;
+    --dark: #15171f;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: "Inter", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--navy);
+    line-height: 1.5;
+  }
+  h1, h2, h3, .display { font-family: "Sora", system-ui, sans-serif; }
+  img { display: block; max-width: 100%; }
+  a { color: inherit; text-decoration: none; }
+  .wrap { max-width: 1160px; margin: 0 auto; padding: 0 32px; }
+  @media (max-width: 720px) { .wrap { padding: 0 20px; } }
+
+  /* ---------- nav ---------- */
+  nav.topbar {
+    position: sticky; top: 0; z-index: 20;
+    background: rgba(253,251,248,0.9);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border);
+  }
+  nav.topbar .wrap { display: flex; align-items: center; justify-content: space-between; height: 76px; }
+  .brand { font-weight: 800; font-size: 19px; letter-spacing: -0.01em; }
+  .brand span { color: var(--orange-dark); }
+  .navlinks { display: flex; align-items: center; gap: 32px; font-size: 14.5px; font-weight: 600; color: var(--navy-soft); }
+  .navlinks a:hover { color: var(--navy); }
+  .nav-cta {
+    background: var(--navy); color: #fff; padding: 10px 20px; border-radius: 999px;
+    font-weight: 700; font-size: 14px;
+  }
+  .nav-icons { display: flex; gap: 14px; }
+  @media (max-width: 760px) { .navlinks .links-only { display: none; } }
+
+  /* ---------- hero ---------- */
+  .hero { padding: 72px 0 40px; position: relative; overflow: hidden; }
+  .hero .wrap { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 20px; align-items: center; }
+  @media (max-width: 860px) { .hero .wrap { grid-template-columns: 1fr; } }
+
+  .eyebrow { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--orange-dark); margin-bottom: 20px; }
+  .eyebrow .line { width: 26px; height: 2px; background: var(--orange); border-radius: 2px; }
+
+  .hero h1 { font-size: 50px; line-height: 1.08; font-weight: 800; letter-spacing: -0.015em; margin-bottom: 18px; }
+  .hero h1 .accent { color: var(--orange-dark); }
+  @media (max-width: 500px) { .hero h1 { font-size: 38px; } }
+
+  .hero p.lede { font-size: 16.5px; color: var(--navy-soft); max-width: 460px; margin-bottom: 30px; }
+
+  .hero-ctas { display: flex; gap: 14px; margin-bottom: 38px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 14px 26px; border-radius: 999px; font-weight: 700; font-size: 14.5px;
+    border: 1.5px solid transparent;
+  }
+  .btn-primary { background: var(--orange); color: #241a0d; }
+  .btn-primary:hover { background: var(--orange-dark); }
+  .btn-outline { border-color: var(--navy); color: var(--navy); }
+  .btn-outline:hover { background: var(--navy); color: #fff; }
+
+  .stat-row { display: flex; gap: 40px; }
+  .stat .num { font-size: 26px; font-weight: 800; }
+  .stat .lbl { font-size: 12.5px; color: var(--muted); margin-top: 2px; max-width: 140px; }
+
+  /* photo blob */
+  .hero-art { position: relative; display: flex; justify-content: center; }
+  .blob {
+    position: relative; width: 400px; height: 460px;
+  }
+  .blob::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(160deg, var(--orange), var(--orange-dark));
+    border-radius: 58% 42% 48% 52% / 54% 46% 54% 46%;
+  }
+  .blob img {
+    position: absolute; left: 50%; bottom: -8px; transform: translateX(-50%);
+    width: 332px; z-index: 2;
+    filter: drop-shadow(0 18px 26px rgba(31,35,51,0.18));
+  }
+  .pin {
+    position: absolute; background: #fff; border: 1px solid var(--border);
+    border-radius: 14px; padding: 11px 16px; box-shadow: 0 14px 30px rgba(31,35,51,0.1);
+    font-size: 12.5px; z-index: 3; max-width: 192px;
+  }
+  .pin .role { font-weight: 700; font-size: 13px; }
+  .pin .co { color: var(--muted); font-size: 11.5px; margin-top: 1px; }
+  .pin .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+  .pin.p1 { top: 14px; left: -36px; }
+  .pin.p1 .dot { background: var(--orange); }
+  .pin.p2 { bottom: 54px; right: -42px; }
+  .pin.p2 .dot { background: var(--navy); }
+  @media (max-width: 860px) { .pin.p1, .pin.p2 { display: none; } .blob { margin: 0 auto; } }
+
+  /* ---------- carousel-ish strip ---------- */
+  .strip {
+    background: var(--dark);
+    background-image: repeating-linear-gradient(115deg, rgba(255,255,255,0.025) 0 2px, transparent 2px 34px);
+    padding: 54px 0;
+    margin-top: 28px;
+  }
+  .strip .wrap { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 4px; scrollbar-width: none; }
+  .strip .wrap::-webkit-scrollbar { display: none; }
+  .strip-card {
+    flex: 0 0 auto; width: 240px; background: #1c1f2b; border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 16px; padding: 18px; color: #cfd2dd;
+  }
+  .strip-card .tag { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; color: var(--orange); margin-bottom: 10px; }
+  .strip-card h4 { font-size: 15.5px; color: #fff; margin-bottom: 6px; }
+  .strip-card p { font-size: 12.5px; color: #9398a8; line-height: 1.55; }
+
+  /* ---------- section heading ---------- */
+  .section { padding: 84px 0; }
+  .section.tight { padding-top: 0; }
+  .sec-head { max-width: 560px; margin-bottom: 48px; }
+  .sec-head h2 { font-size: 34px; font-weight: 800; letter-spacing: -0.01em; }
+  .sec-head h2 .accent { color: var(--orange-dark); }
+  .sec-head p { color: var(--muted); font-size: 15px; margin-top: 10px; }
+
+  /* ---------- timeline ---------- */
+  .timeline { position: relative; }
+  .tl-row { display: grid; grid-template-columns: 1fr 48px 1fr; gap: 0; position: relative; padding: 30px 0; }
+  .tl-row:not(:last-child) { border-bottom: 1px solid var(--border); }
+  .tl-left { padding-right: 32px; }
+  .tl-left .co { font-size: 20px; font-weight: 700; }
+  .tl-left .when { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .tl-mid { display: flex; justify-content: center; position: relative; }
+  .tl-dot { width: 16px; height: 16px; border-radius: 50%; border: 3px solid #fff; box-shadow: 0 0 0 1px var(--border); margin-top: 4px; z-index: 2; }
+  .tl-row:nth-child(odd) .tl-dot { background: var(--orange); }
+  .tl-row:nth-child(even) .tl-dot { background: var(--navy); }
+  .tl-mid::before {
+    content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 0;
+    border-left: 2px dashed var(--border);
+  }
+  .tl-right { padding-left: 32px; }
+  .tl-right .role { font-weight: 700; font-size: 15px; margin-bottom: 8px; }
+  .tl-right p { font-size: 14px; color: var(--navy-soft); line-height: 1.6; }
+  @media (max-width: 760px) {
+    .tl-row { grid-template-columns: 24px 1fr; }
+    .tl-left { display: none; }
+    .tl-mid { grid-column: 1; }
+    .tl-right { grid-column: 2; padding-left: 16px; }
+    .tl-row .co, .tl-row .when { display: block; }
+    .tl-right::before { content: attr(data-co) " · " attr(data-when); display: block; font-size: 12px; color: var(--muted); font-weight: 700; margin-bottom: 6px; }
+  }
+
+  /* ---------- skills ---------- */
+  .skills-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  @media (max-width: 900px) { .skills-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 520px) { .skills-grid { grid-template-columns: 1fr; } }
+  .skill-card { background: var(--bg-soft); border-radius: 18px; padding: 26px 24px; border: 1px solid var(--border); }
+  .skill-card .ic { width: 38px; height: 38px; border-radius: 10px; background: var(--navy); display: flex; align-items: center; justify-content: center; margin-bottom: 18px; }
+  .skill-card h3 { font-size: 16px; margin-bottom: 10px; }
+  .skill-card p { font-size: 13px; color: var(--muted); line-height: 1.65; }
+
+  /* ---------- projects ---------- */
+  .proj-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+  @media (max-width: 920px) { .proj-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .proj-grid { grid-template-columns: 1fr; } }
+  .proj-card {
+    background: #fff; border: 1px solid var(--border); border-radius: 20px; padding: 24px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .proj-card.flagship { background: var(--navy); color: #fff; border-color: var(--navy); }
+  .proj-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .proj-card h3 { font-size: 17px; }
+  .proj-badge { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; color: var(--orange-dark); background: rgba(239,155,78,0.12); padding: 4px 10px; border-radius: 999px; }
+  .proj-card.flagship .proj-badge { background: rgba(239,155,78,0.2); }
+  .proj-card p.desc { font-size: 13.5px; color: var(--navy-soft); line-height: 1.6; flex: 1; }
+  .proj-card.flagship p.desc { color: #c8cbda; }
+  .proj-stack { font-size: 11.5px; color: var(--muted); }
+  .proj-card.flagship .proj-stack { color: #9499ad; }
+  .proj-links { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 4px; }
+  .proj-links a {
+    font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 999px;
+    border: 1.5px solid var(--border); color: var(--navy);
+  }
+  .proj-links a:hover { border-color: var(--navy); }
+  .proj-card.flagship .proj-links a { border-color: rgba(255,255,255,0.25); color: #fff; }
+  .proj-card.flagship .proj-links a:hover { border-color: #fff; }
+
+  /* ---------- cta band ---------- */
+  .cta-band { background: var(--dark); border-radius: 28px; padding: 64px 48px; text-align: center; margin: 0 32px; }
+  @media (max-width: 640px) { .cta-band { margin: 0 16px; padding: 48px 24px; } }
+  .cta-band h2 { color: #fff; font-size: 32px; font-weight: 800; margin-bottom: 14px; }
+  .cta-band p { color: #9398a8; font-size: 15px; margin-bottom: 30px; }
+  .cta-band .btn-primary { padding: 15px 30px; }
+
+  /* ---------- footer ---------- */
+  footer { padding: 48px 0 40px; }
+  footer .wrap { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; border-top: 1px solid var(--border); padding-top: 28px; }
+  footer .fbrand { font-weight: 700; font-size: 14px; }
+  footer .flinks { display: flex; gap: 22px; font-size: 13.5px; font-weight: 600; color: var(--navy-soft); }
+  footer .flinks a:hover { color: var(--navy); }
+</style>
+</head>
+<body>
+
+  <nav class="topbar">
+    <div class="wrap">
+      <div class="brand">MAGD <span>KAMAL</span></div>
+      <div class="navlinks">
+        <div class="links-only" style="display:flex; gap:32px;">
+          <a href="#work">Experience</a>
+          <a href="#skills">Skills</a>
+          <a href="#projects">Projects</a>
+        </div>
+        <a class="nav-cta" href="mailto:magddevf@gmail.com">Get in touch</a>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow"><span class="line"></span>MOBILE + BACKEND ENGINEER</div>
+        <h1>I'm Magd. I build <span class="accent">mobile apps</span> and the backends behind them.</h1>
+        <p class="lede">Flutter and Dart on the client, NestJS and Rust on the server — shipping production apps end to end, from Clean Architecture to App Store release.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="#projects">View my work</a>
+          <a class="btn btn-outline" href="https://github.com/CompleteGlory" target="_blank" rel="noopener">GitHub</a>
+          <a class="btn btn-outline" href="http://www.linkedin.com/in/magd-kamal-878193254" target="_blank" rel="noopener">LinkedIn</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat"><div class="num">6+</div><div class="lbl">apps shipped to production</div></div>
+          <div class="stat"><div class="num">2</div><div class="lbl">live on App Store &amp; Google Play</div></div>
+          <div class="stat"><div class="num">3</div><div class="lbl">backend stacks — Node, Rust, NestJS</div></div>
+        </div>
+      </div>
+      <div class="hero-art">
+        <div class="blob">
+          <img src="../assets/magd-portrait.png" alt="Magd Kamal" />
+          <div class="pin p1"><div><span class="dot"></span><span class="role">Madar</span></div><div class="co">Mobile &amp; Backend · Present</div></div>
+          <div class="pin p2"><div><span class="dot"></span><span class="role">Riff</span></div><div class="co">Mobile &amp; Backend · 2026</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="strip">
+    <div class="wrap">
+      <div class="strip-card">
+        <div class="tag">FLAGSHIP APP</div>
+        <h4>Riff — social music app</h4>
+        <p>Flutter + BLoC, NestJS + PostgreSQL backend. Live on the App Store and Google Play.</p>
+      </div>
+      <div class="strip-card">
+        <div class="tag">PRODUCTION POS</div>
+        <h4>Madar — retail POS platform</h4>
+        <p>Rust API powering offline-first, multi-device sync across retail branches.</p>
+      </div>
+      <div class="strip-card">
+        <div class="tag">MARKETPLACE</div>
+        <h4>Fixr — craftsmen booking</h4>
+        <p>Two-sided marketplace with location search and OTP auth, shipped to two apps.</p>
+      </div>
+      <div class="strip-card">
+        <div class="tag">REAL-TIME</div>
+        <h4>Olofoofo — social &amp; chat</h4>
+        <p>WebSocket messaging across three build flavors, automated with Fastlane.</p>
+      </div>
+    </div>
+  </div>
+
+  <section class="section" id="work">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>My Work <span class="accent">Experience</span></h2>
+        <p>Freelance engineering roles, each one shipping a production app and the backend behind it.</p>
+      </div>
+      <div class="timeline">
+        <div class="tl-row">
+          <div class="tl-left"><div class="co">Madar</div><div class="when">Jul 2026 – Present</div></div>
+          <div class="tl-mid"><div class="tl-dot"></div></div>
+          <div class="tl-right" data-co="Madar" data-when="Jul 2026 – Present">
+            <div class="role">Mobile &amp; Backend Engineer</div>
+            <p>Built and maintain the Madar Rust API powering POS, attendance, and dashboard products. Shipped Madar POS to production retail clients and designed an offline-first live-sync architecture keeping table status consistent with no internet dependency.</p>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="co">Riff</div><div class="when">Jan 2026 – Aug 2026</div></div>
+          <div class="tl-mid"><div class="tl-dot"></div></div>
+          <div class="tl-right" data-co="Riff" data-when="Jan 2026 – Aug 2026">
+            <div class="role">Mobile &amp; Backend Engineer</div>
+            <p>Built and shipped Riff, a cross-platform social music app live on the App Store and Google Play. Clean Architecture Flutter client, modular NestJS + TypeORM backend, real-time chat over Socket.IO, and hardened JWT auth with single-flight token refresh.</p>
+          </div>
+        </div>
+        <div class="tl-row">
+          <div class="tl-left"><div class="co">B2B Delivery Platform</div><div class="when">Jul 2024 – Aug 2024</div></div>
+          <div class="tl-mid"><div class="tl-dot"></div></div>
+          <div class="tl-right" data-co="B2B Delivery Platform" data-when="Jul 2024 – Aug 2024">
+            <div class="role">Software Engineer</div>
+            <p>Delivered a delivery-operations platform from one codebase — a driver app and an operations dashboard — with live order and driver tracking over WebSockets, server-sent events, and Google Maps.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section tight" id="skills" style="background:var(--bg-soft);">
+    <div class="wrap" style="padding-top:84px; padding-bottom:84px;">
+      <div class="sec-head">
+        <h2>What I <span class="accent">work with</span></h2>
+        <p>Full ownership of the stack — client, API, and the infrastructure in between.</p>
+      </div>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="2" y="1" width="14" height="16" rx="2" stroke="#ef9b4e" stroke-width="1.4"/><circle cx="9" cy="14.3" r="0.9" fill="#ef9b4e"/></svg></div>
+          <h3>Mobile</h3>
+          <p>Flutter, Dart, BLoC &amp; Cubit, GetIt, Provider, Hive, Dio, Retrofit, React Native, SwiftUI</p>
+        </div>
+        <div class="skill-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><rect x="1" y="4" width="16" height="5" rx="1.5" stroke="#ef9b4e" stroke-width="1.4"/><rect x="1" y="11" width="16" height="5" rx="1.5" stroke="#ef9b4e" stroke-width="1.4"/><circle cx="4.3" cy="6.5" r="0.8" fill="#ef9b4e"/><circle cx="4.3" cy="13.5" r="0.8" fill="#ef9b4e"/></svg></div>
+          <h3>Backend &amp; APIs</h3>
+          <p>Node.js, NestJS, Rust, TypeORM, RESTful APIs, WebSockets, Socket.IO, Server-Sent Events</p>
+        </div>
+        <div class="skill-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M9 1.5L16 5v8l-7 3.5L2 13V5l7-3.5z" stroke="#ef9b4e" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+          <h3>Architecture &amp; Testing</h3>
+          <p>Clean Architecture, MVVM, Repository Pattern, DI, Unit/Widget/Integration tests, Mockito, bloc_test</p>
+        </div>
+        <div class="skill-card">
+          <div class="ic"><svg width="18" height="18" viewBox="0 0 18 18" fill="none"><path d="M3 9a6 6 0 1 1 3.3 5.35" stroke="#ef9b4e" stroke-width="1.4" stroke-linecap="round"/><path d="M3 9v4h4" stroke="#ef9b4e" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Delivery &amp; Tools</h3>
+          <p>Git, GitHub Actions, Fastlane, Xcode Cloud, Firebase FCM, CI/CD pipelines, PR reviews</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="projects">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Have a look at my <span class="accent">projects</span></h2>
+        <p>Every project below is a real app with a real repo — not a tutorial clone.</p>
+      </div>
+      <div class="proj-grid">
+
+        <div class="proj-card flagship">
+          <div class="proj-top"><h3>Riff</h3><div class="proj-badge">LIVE APP</div></div>
+          <p class="desc">Cross-platform social music app with real-time chat, offline-first caching, and single-flight JWT refresh. Live on the App Store and Google Play.</p>
+          <div class="proj-stack">Flutter · BLoC · NestJS · PostgreSQL · Socket.IO</div>
+          <div class="proj-links">
+            <a href="https://apps.apple.com/eg/app/riff-social-music/id6794351030" target="_blank" rel="noopener">App Store</a>
+            <a href="https://play.google.com/store/apps/details?id=com.magd.riff" target="_blank" rel="noopener">Google Play</a>
+            <a href="https://github.com/CompleteGlory/riff" target="_blank" rel="noopener">Client repo</a>
+            <a href="https://github.com/Fadyy22/riff/tree/magd-vibe-updates" target="_blank" rel="noopener">API repo</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>Madar</h3><div class="proj-badge">PRODUCTION</div></div>
+          <p class="desc">POS, workforce attendance, and management dashboard for retail clients, backed by one Rust API with offline-first, multi-device sync.</p>
+          <div class="proj-stack">Flutter · Rust · Offline-first sync</div>
+          <div class="proj-links">
+            <a href="https://github.com/Shawket4/Madar" target="_blank" rel="noopener">POS repo</a>
+            <a href="https://github.com/Shawket4/MadarRust" target="_blank" rel="noopener">API repo</a>
+            <a href="https://github.com/Shawket4/MadarDashboard" target="_blank" rel="noopener">Dashboard repo</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>Fixr</h3><div class="proj-badge">MARKETPLACE</div></div>
+          <p class="desc">Two-sided marketplace connecting customers to craftsmen — OTP + Google sign-in, Maps-based search, two-language localization.</p>
+          <div class="proj-stack">Flutter · Google Maps · Firebase Auth</div>
+          <div class="proj-links">
+            <a href="https://github.com/fixerEgypt/fixer-app" target="_blank" rel="noopener">App repo</a>
+            <a href="https://github.com/Nadine-ali/fixer_admin_panel_app" target="_blank" rel="noopener">Dashboard repo</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>Olofoofo</h3><div class="proj-badge">SOCIAL</div></div>
+          <p class="desc">Lifestyle social and chat app with real-time messaging, built across three app flavors and a single-pipeline Fastlane release.</p>
+          <div class="proj-stack">Flutter · WebSockets · GitHub Actions</div>
+          <div class="proj-links">
+            <a href="https://github.com/MagdKamaldev/olofoofo" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>B2B Delivery Ops</h3><div class="proj-badge">PRODUCTION</div></div>
+          <p class="desc">Driver app and operations dashboard from one codebase, with live order and driver tracking over WebSockets and Google Maps.</p>
+          <div class="proj-stack">WebSockets · Server-Sent Events · Maps</div>
+          <div class="proj-links">
+            <a href="https://github.com/MagdKamaldev/rider_app" target="_blank" rel="noopener">App repo</a>
+            <a href="https://github.com/MagdKamaldev/rider_admin_panel" target="_blank" rel="noopener">Dashboard repo</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>CareerCraft</h3><div class="proj-badge">PLATFORM</div></div>
+          <p class="desc">Recruitment platform helping employers filter and shortlist candidates — MVVM with paginated REST loading.</p>
+          <div class="proj-stack">Flutter · MVVM · Pagination</div>
+          <div class="proj-links">
+            <a href="https://youtu.be/kQt9ilfJeqY" target="_blank" rel="noopener">Demo</a>
+            <a href="https://github.com/MagdKamaldev/carreer-craft" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>Forkified</h3><div class="proj-badge">APP</div></div>
+          <p class="desc">Recipe browsing and review app with Cubit state management and JWT-secured REST, supporting three sign-in methods.</p>
+          <div class="proj-stack">Flutter · Cubit · JWT</div>
+          <div class="proj-links">
+            <a href="https://youtu.be/pBnXf_lmyvA" target="_blank" rel="noopener">Demo</a>
+            <a href="https://github.com/MagdKamaldev/forkified" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+
+        <div class="proj-card">
+          <div class="proj-top"><h3>Forge</h3><div class="proj-badge">IN PROGRESS</div></div>
+          <p class="desc">Cross-platform mobile app built with React Native and TypeScript, consuming REST APIs from a shared backend.</p>
+          <div class="proj-stack">React Native · TypeScript</div>
+          <div class="proj-links">
+            <a href="https://github.com/CompleteGlory/forge" target="_blank" rel="noopener">GitHub</a>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0;">
+    <div class="wrap">
+      <div class="cta-band">
+        <h2>Let's build something useful.</h2>
+        <p>Open to mobile and backend roles — reach out on email or LinkedIn.</p>
+        <a class="btn btn-primary" href="mailto:magddevf@gmail.com">magddevf@gmail.com</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap">
+      <div class="fbrand">MAGD KAMAL</div>
+      <div class="flinks">
+        <a href="https://github.com/CompleteGlory" target="_blank" rel="noopener">GitHub</a>
+        <a href="http://www.linkedin.com/in/magd-kamal-878193254" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="mailto:magddevf@gmail.com">Email</a>
+        <span style="color:var(--muted);">Cairo, Egypt</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
